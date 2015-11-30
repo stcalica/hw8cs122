@@ -13,11 +13,14 @@ def main():
 	counter = 0
 	matrices = [] 
 	while(counter < num):
-		size = str(input("Enter dimensions for each matrix (m x n): "))
+		size = raw_input("Enter dimensions for each matrix (rows x cols): ")
 		dim = size.split("x")
-		print(dim)
+		tmp = random.randint(0 , 100, (1, int(dim[0]), int(dim[1])) ) # creates one matrix full of values between 1 and 100, with the given dimensions and adds it to the the matrices
+		print(tmp)
+		matrices.append(tmp)
+		counter = counter + 1 
 		
-	
+	print(matrices)
 	return
 	
 	
