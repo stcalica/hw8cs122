@@ -1,5 +1,8 @@
 from numpy import random
 from numpy import shape
+import sys
+import time 
+MAX = sys.maxint
 """
 Creates a specified number of matrices with a specificed dimensions
 Fills in matrices with random values from numpy.random.random() 
@@ -7,6 +10,52 @@ Fills in matrices with random values from numpy.random.random()
 Computes the chain multiplication according to questions
 
 """
+
+def dynamic_chain(dimensions):
+    n = len(dimensions)-1
+    m, pos = {}, {}
+    for i in range(1, n+1):
+        m[i, i] = 0
+    for l in range(2, n+1):
+        for i in range(1, n-l+2):
+            j = i+l-1
+            m[i,j] = MAX
+            for k in range(i, j):
+                product = m[i,k]+m[k+1,j]+dimensions[i-1]*dimensions[k]*dimensions[j]
+                if product < m[i,j]:
+                    m[i,j] = product
+                    pos[i,j] = k
+    return product
+
+
+
+
+def memo_chain(dimensions):
+	n = len(dimensions) - 1
+	m = {}
+	for i in range(1, len(dimensions)):
+		for j in range(i, len(dimensions)):
+			m[i,j] = MAX
+			#print(i)
+			#print(j)
+			#print(m[i,j])
+	#product =
+	return lookup_chain(m, dimensions, 1, n)
+
+def lookup_chain(m, dimensions, i, j):
+	if(m[i,j] < 0):
+		return m[i,j]
+	if(i == j):
+		m[i,j] = 0
+		product = 0
+	else:	
+		for k in range(i, j):
+			product = lookup_chain(m, dimensions, i, k) + lookup_chain(m, dimensions, k+1, j) + (dimensions[i-1] * dimensions[k]* dimensions[j])
+			if product < m[i, j]:
+				m[i,j] = product
+	return product
+	
+
 
 
 #using the recursive algorithm from matrix start to matrix end with dimensions d
@@ -20,25 +69,38 @@ def recursive_chain(dimensions, start, end):
 
 def main():
 	print("Chain Multiplying Matrices")
-	num = input("Enter the number of matrices: ")
-	counter = 0
-	matrices = [[0 for x in range(num)] for x in range(num)] #extra row and columns of zero
-	d = []
-	print(matrices)
-	while(counter < num):
-		size = raw_input("Enter dimensions for each matrix (rows x cols): ")
-		dim = size.split("x")
-		d.append(int(dim[0]))
-		tmp = random.randint(0 , 100, (1, int(dim[0]), int(dim[1])) ) # creates one matrix full of values between 1 and 100, with the given dimensions and adds it to the the matrices
-		print(tmp)
-		matrices.append(tmp)
-		counter = counter + 1 
+	#uin = raw_input("Enter the matrix dimensions with spaces in between: ")
+	#dim = []
+	#uin = uin.split(" ") 
+	#or d in uin:
+	#	dim.append(int(d))
+	dim = [1, 2, 3, 4 , 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 , 16, 17, 18, 19, 20, 21, 22] #, 23, 24, 25 ]
 	print("\n\n")
-	print("computing the optimal order and cost...")
-	print("matrices with dimensions" , d)
-	print((len(d) - 1))
+	print("computing the optimal order and cost of a matrix with input as %i..." % len(dim))
 	print("\n\n")
-	print(recursive_chain(d, 1, (len(d)-1)))
+	
+	print("Using recursion: ")
+	start = time.time() 
+	print(recursive_chain(dim, 1, (len(dim)-1)))
+	end = time.time()
+	print("Recursion took: %i minutes" % ((end-start)%60))
+	
+	
+	print("Using memoization: ")
+	start = time.time() 
+	print(memo_chain(dim))
+	end = time.time()
+	print("Recursion took: %i minutes" % ((end-start)%60))
+	
+		
+	print("Using DP: ")
+	start = time.time() 
+	print(dynamic_chain(dim))
+	end = time.time()
+	print("Dynamic Programming took: %i minutes" % ((end-start)%60))
+	
+	
+	
 	return
 
 	
